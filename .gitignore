@@ -1,0 +1,6 @@
+# Arquivos de ambiente
+.env
+
+# Pastas do Python
+__pycache__/
+*.pyc
