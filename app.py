@@ -1,88 +1,90 @@
 import os
+import glob
 import requests
 import argparse
 from datetime import datetime
 from dotenv import load_dotenv
+from commands import listar_modelos, mostrar_ultima_resposta
+from core import perguntar_ia, salvar_resposta
 
 load_dotenv()
 
+modelos = ["gpt-4o", "gpt-4o-mini", "gpt-4o-reasoning", "gpt-4o-mini-tts"]
+
 API_KEY = os.getenv("API_KEY")
 
-def perguntar_ia(prompt: str, modelo: str = "gpt-4o-mini") -> str:
-    """
-    Envia uma pergunta ao modelo de IA usando a OpenAI API.
-    Sempre força a resposta em português do Brasil.
-    """
-    
-    url = "https://api.openai.com/v1/chat/completions"
 
-    payload = {
-        "model": modelo,
-        "messages": [
-            {
-                "role": "system",
-                "content": "Você é um assistente que responde sempre em português do Brasil, "
-                           "de forma clara, objetiva e educada. Nunca responda em outro idioma."
-            },
-            {"role": "user", "content": prompt}
-        ]
-    }
+def create_parser():
+    parser = argparse.ArgumentParser(
+        description="CLI - Pergunte à IA com Subcomandos (PT-BR)"
+    )
 
-    headers = {
-        "Authorization": f"Bearer {API_KEY}",
-        "Content-Type": "application/json"
-    }
+    subparsers = parser.add_subparsers(dest="comando")
 
-    response = requests.post(url, json=payload, headers=headers)
-
-    try:
-        response.raise_for_status()
-    except Exception as e:
-        raise RuntimeError(f"Erro ao chamar a API: {e}")
-
-    return response.json()["choices"][0]["message"]["content"]
-
-
-def salvar_resposta(prompt: str, resposta: str):
-    """
-    Salva a pergunta e a resposta em um arquivo Markdown;
-    e registra a pergunta no log.txt.
-    """
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    filename = f"respostas/{timestamp}.md"
-
-    # Salvar resposta
-    with open(filename, "w", encoding="utf-8") as f:
-        f.write(f"# Pergunta\n{prompt}\n\n# Resposta\n{resposta}")
-
-    # Registrar log
-    with open("logs/log.txt", "a", encoding="utf-8") as log:
-        log.write(f"{timestamp} | {prompt}\n")
-
-
-def main():
-    parser = argparse.ArgumentParser(description="CLI - Pergunte à IA (PT-BR)")
-
-    parser.add_argument(
+    # -----------------------------
+    # Subcomando: perguntar
+    # -----------------------------
+    perguntar_parser = subparsers.add_parser(
+        "perguntar", help="Enviar uma pergunta à IA"
+    )
+    perguntar_parser.add_argument(
         "--prompt",
         type=str,
         required=True,
-        help="Texto da pergunta para enviar à IA"
+        help="Texto da pergunta",
+    )
+    perguntar_parser.add_argument(
+        "--modelo", type=str, default="gpt-4o-mini", help="Modelo a ser usado"
     )
 
-    parser.add_argument(
-        "--modelo",
-        type=str,
-        default="gpt-4o-mini",
-        help="Modelo a ser utilizado (padrão: gpt-4o-mini)"
-    )
+    # -----------------------------
+    # Subcomando: historico
+    # -----------------------------
+    subparsers.add_parser("historico", help="Exibir o histórico de perguntas (log)")
 
+    # -----------------------------
+    # Subcomando: limpar-log
+    # -----------------------------
+    subparsers.add_parser("limpar-log", help="Limpar o arquivo de log")
+
+    # -----------------------------
+    # Subcomando: listar modelos
+    # -----------------------------
+    subparsers.add_parser("modelos", help="lista os modelos suportados")
+
+    # -----------------------------
+    # Subcomando: última-resposta
+    # -----------------------------
+    subparsers.add_parser(
+        "ultima-resposta", help="Mostra o último arquivo de resposta gerado"
+    )
+    return parser
+
+
+def main():
+    os.system("cls" if os.name == "nt" else "clear")
+
+    parser = create_parser()
     args = parser.parse_args()
 
-    resposta = perguntar_ia(args.prompt, modelo=args.modelo)
-    salvar_resposta(args.prompt, resposta)
-
-    print("\n📁 Resposta salva com sucesso em /respostas\n")
+    if args.comando == "modelos":
+        listar_modelos()
+    elif args.comando == "ultima-resposta":
+        mostrar_ultima_resposta()
+    elif args.comando == "perguntar":
+        resposta = perguntar_ia(args.prompt, modelo=args.modelo)
+        salvar_resposta(args.prompt, resposta)
+    elif args.comando == "historico":
+        try:
+            with open("logs/log.txt", "r", encoding="utf-8") as f:
+                conteudo = f.read()
+                print("\n📜 Histórico de perguntas:\n")
+                print(conteudo if conteudo else "(vazio)")
+        except FileNotFoundError:
+            print("\n⚠️ Nenhum histórico encontrado.\n")
+    elif args.comando == "limpar-log":
+        open("logs/log.txt", "w").close()
+        print("\n🧹 Log limpo com sucesso!\n")
 
 
 if __name__ == "__main__":

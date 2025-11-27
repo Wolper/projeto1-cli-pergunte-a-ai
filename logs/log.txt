@@ -1,7 +1,4 @@
-2025-11-24_15-46-54 | De que Napoleão Bonaparte morreu?
-2025-11-25_09-00-17 | Explique o que é Python
-2025-11-25_09-02-51 | Como funciona RAG
-2025-11-25_09-07-37 | Como funciona RAG
-2025-11-25_09-09-20 | Como funciona RAG
-2025-11-25_11-23-37 | Fale sobre o Brasil
-2025-11-25_11-23-48 | Hola, qué tal?
+2025-11-27_07-05-16 | Olá!
+2025-11-27_07-11-31 | Qual é o horário que o sol nasce no verão?
+2025-11-27_07-29-47 | Quando as cigarras aparecem?
+2025-11-27_07-39-52 | Quando as andorinhas migram?
