@@ -1,0 +1,12 @@
+README.md
+setup.py
+cli_pergunte_ai/__init__.py
+cli_pergunte_ai/cli.py
+cli_pergunte_ai/commands.py
+cli_pergunte_ai/core.py
+pergunte_ai.egg-info/PKG-INFO
+pergunte_ai.egg-info/SOURCES.txt
+pergunte_ai.egg-info/dependency_links.txt
+pergunte_ai.egg-info/entry_points.txt
+pergunte_ai.egg-info/requires.txt
+pergunte_ai.egg-info/top_level.txt

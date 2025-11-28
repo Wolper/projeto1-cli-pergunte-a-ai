@@ -4,8 +4,9 @@ import requests
 import argparse
 from datetime import datetime
 from dotenv import load_dotenv
-from commands import listar_modelos, mostrar_ultima_resposta
-from core import perguntar_ia, salvar_resposta
+from cli_pergunte_ai.commands import listar_modelos, mostrar_ultima_resposta
+from cli_pergunte_ai.core import perguntar_ia, salvar_resposta
+
 
 load_dotenv()
 

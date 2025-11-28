@@ -1,0 +1,2 @@
+[console_scripts]
+pergunte-ai = cli_pergunte_ai.cli:main
